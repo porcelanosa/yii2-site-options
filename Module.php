@@ -1,5 +1,4 @@
 <?php
-    
     /*
      * This file is part of the Porcelanosa project.
      *
@@ -9,7 +8,7 @@
      * file that was distributed with this source code.
      */
     
-    namespace porcelanosa\yii2options;
+    namespace porcelanosa\yii2siteoptions;
     
     use yii\base\Module as BaseModule;
     use yii\filters\AccessControl;
