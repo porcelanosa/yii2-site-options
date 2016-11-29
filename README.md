@@ -3,7 +3,9 @@ Yii2 Site Options
 
 **WARNING! UNDER DEVELOPMENT**
 
-[![Total Downloads](https://poser.pugx.org/porcelanosa/yii2-site-options/downloads)](https://packagist.org/packages/porcelanosa/yii2-site-options)
+[![Total Downloads](https://poser.pugx.org/porcelanosa/yii2-options/downloads)](https://packagist.org/packages/porcelanosa/yii2-options?format=flat-square)
+[![License](https://poser.pugx.org/porcelanosa/yii2-options/license)](https://packagist.org/packages/porcelanosa/yii2-options?format=flat-square)
+[![Monthly Downloads](https://poser.pugx.org/porcelanosa/yii2-options/d/monthly?format=flat-square)](https://packagist.org/packages/porcelanosa/yii2-options)
 
 Installation
 ============

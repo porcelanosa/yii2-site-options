@@ -38,31 +38,6 @@
          */
         public $adminPermission;
         
-        /**
-         * @var string path to models for binding options
-         */
-        public $model_path = '';
-        /**
-         * @var string model namespace
-         */
-        public $modelNamespace = '';
-        /**
-         * @var string
-         **/
-        public $fileUrl = '';
-        /**
-         * @var string
-         **/
-        public $filePath = '';
-        /**
-         * @var string
-         **/
-        public $imageUrl = '';
-        /**
-         * @var string
-         **/
-        public $imagePath = '';
-        
         /** @inheritdoc */
         public function behaviors()
         {
