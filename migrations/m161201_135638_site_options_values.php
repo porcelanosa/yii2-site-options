@@ -2,22 +2,22 @@
 
 use yii\db\Migration;
 
-class m161129_211542_site_options extends Migration
+class m161201_135638_site_options_values extends Migration
 {
-    /*
-    public function up()
+
+
+    /*public function up()
     {
 
     }
 
     public function down()
     {
-        echo "m161129_211542_site_options cannot be reverted.\n";
+        echo "m161201_135638_site_options_values cannot be reverted.\n";
 
         return false;
     }
     */
-
     // Use safeUp/safeDown to run migration code within a transaction
     public function safeUp()
     {
@@ -26,19 +26,16 @@ class m161129_211542_site_options extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%site_options}}', [
+        $this->createTable('{{%site_options_values}}', [
             'id' => $this->primaryKey(),
             'option_type_id' => $this->integer(),
-            'option_name' => $this->string(255)->null(),
-            'option_alias' => $this->string(255)->null(),
-            'active' => $this->integer()->defaultValue(1),
-            'sort' => $this->integer(),
+            'value' => $this->string(255)->null(),
+            'text_value' => $this->text(),
         ], $tableOptions);
-
     }
 
     public function safeDown()
     {
-        $this->dropTable('{{%site_options}}');
+        $this->dropTable('{{%site_options_values}}');
     }
 }

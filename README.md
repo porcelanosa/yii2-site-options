@@ -3,9 +3,9 @@ Yii2 Site Options
 
 **WARNING! UNDER DEVELOPMENT**
 
-[![Total Downloads](https://poser.pugx.org/porcelanosa/yii2-options/downloads)](https://packagist.org/packages/porcelanosa/yii2-options?format=flat-square)
-[![License](https://poser.pugx.org/porcelanosa/yii2-options/license)](https://packagist.org/packages/porcelanosa/yii2-options?format=flat-square)
-[![Monthly Downloads](https://poser.pugx.org/porcelanosa/yii2-options/d/monthly?format=flat-square)](https://packagist.org/packages/porcelanosa/yii2-options)
+[![Total Downloads](https://poser.pugx.org/porcelanosa/yii2-site-options/downloads?format=flat-square)](https://packagist.org/packages/porcelanosa/yii2-site-options)
+[![Monthly Downloads](https://poser.pugx.org/porcelanosa/yii2-site-options/d/monthly?format=flat-square)](https://packagist.org/packages/porcelanosa/yii2-site-options)
+[![License](https://poser.pugx.org/porcelanosa/yii2-site-options/license?format=flat-square)](https://packagist.org/packages/porcelanosa/yii2-site-options)
 
 Installation
 ============
@@ -45,7 +45,7 @@ Add options module to both web and console config files as follows:
 'modules' => [
     ...
     'siteOptions' => [
-        'class' => 'porcelanosa\yii2siteOptions\Module',
+        'class' => 'porcelanosa\yii2siteoptions\Module',
         'layout' => '@app/modules/admin/views/layouts/main',
     ],
     ...
@@ -65,7 +65,7 @@ $ php yii migrate/up --migrationPath=@vendor/porcelanosa/yii2-site-options/migra
 Menu items
 ```php
 
-['label' => Yii::t('app', 'ADMIN_NAV_STATUS_TYPES'), 'url' => ['/siteoptions/optiontypes/index']],
-['label' => Yii::t('app', 'ADMIN_NAV_OPTIONS_LIST'), 'url' => ['/siteoptions/optionslist/index']],
+['label' => Yii::t('app', 'ADMIN_NAV_STATUS_TYPES'), 'url' => ['/siteOptions/optiontypes/index']],
+['label' => Yii::t('app', 'ADMIN_NAV_OPTIONS_LIST'), 'url' => ['/siteOptions/index']],
 ```
 

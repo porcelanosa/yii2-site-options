@@ -26,7 +26,7 @@
         /**
          * @var string
          */
-        public $defaultRoute = 'optionslist/index';
+        public $defaultRoute = 'siteoptionsvalues/index';
         
         /**
          * @var array
