@@ -19,7 +19,9 @@
   ],
   "require": {
     "php": ">=5.6.0",
-    "yiisoft/yii2": "*"
+    "yiisoft/yii2": "*",
+    "vova07/yii2-imperavi-widget": "^1.2",
+    "rubaxa/fileapi": "*"
   },
   "autoload": {
     "psr-4": {

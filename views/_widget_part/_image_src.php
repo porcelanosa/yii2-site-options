@@ -5,4 +5,4 @@
  * @author Alex Porcelanosa
  */
 ?>
-<?=\yii\bootstrap\Html::img($option->value->value)?>
+<? return $option->value->value?>

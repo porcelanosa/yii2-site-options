@@ -1,7 +1,32 @@
 <?php
+
+namespace porcelanosa\yii2siteoptions\assets;
+
+use yii\web\AssetBundle;
+
 /**
- * Created by PhpStorm.
- * User: Sasha-PC
- * Date: 08.12.2016
- * Time: 16:14
+ * Widget asset bundle.
  */
+class FileapiAsset extends AssetBundle
+{
+    /**
+     * @inheritdoc
+     */
+    public $sourcePath = '@vendor/rubaxa/fileapi';
+
+    /**
+     * @inheritdoc
+     */
+    public $js = [
+        'FileAPI/FileAPI.min.js',
+        'FileAPI/FileAPI.exif.js',
+        'jquery.fileapi.min.js'
+    ];
+
+    /**
+     * @inheritdoc
+     */
+    public $depends = [
+        'yii\web\JqueryAsset',
+    ];
+}

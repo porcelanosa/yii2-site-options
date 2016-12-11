@@ -4,6 +4,7 @@ namespace porcelanosa\yii2siteoptions\models;
 
 use Yii;
 use porcelanosa\yii2siteoptions\models\SiteOptionsTypes;
+use porcelanosa\yii2siteoptions\Module;
 
 /**
  * This is the model class for table "site_options".
@@ -40,14 +41,22 @@ class SiteOptions extends \yii\db\ActiveRecord
      * Возвращает тип параметра
      */
     public function getType() {
-        return $this->hasOne( SiteOptionsTypes::className(), [ 'option_type_id' => 'id' ] );
+        return $this->hasOne( SiteOptionsTypes::className(), [ 'id' => 'option_type_id' ] );
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     * Возвращает тип параметра
+     */
+    public function getValue() {
+        return $this->hasOne( SiteOptionsValues::className(), [ 'option_type_id' => 'id' ] );
     }
 
 
     /**
      * @return SiteOptions[]
      */
-    public function getSiteOptionsList() {
+    public static function getSiteOptionsList() {
         $list = SiteOptions::find(['active'=>1])->orderBy(['sort' => SORT_DESC])->all();
         return $list;
     }
@@ -57,12 +66,12 @@ class SiteOptions extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('backend', 'ID'),
-            'option_type_id' => Yii::t('backend', 'Option Type ID'),
-            'option_name' => Yii::t('backend', 'Option Name'),
-            'option_alias' => Yii::t('backend', 'Option Alias'),
-            'active' => Yii::t('backend', 'Active'),
-            'sort' => Yii::t('backend', 'Sort'),
+            'id' => Yii::t('site-options', 'ID'),
+            'option_type_id' => Yii::t('site-options', 'Option Type ID'),
+            'option_name' => Yii::t('site-options', 'Option Name'),
+            'option_alias' => Yii::t('site-options', 'Option Alias'),
+            'active' => Yii::t('site-options', 'Active'),
+            'sort' => Yii::t('site-options', 'Sort'),
         ];
     }
 

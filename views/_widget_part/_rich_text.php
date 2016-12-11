@@ -5,4 +5,4 @@
  * @author Alex Porcelanosa
  */
 ?>
-<?=$option->value->value?>
+<?=$option->value->text_value?>

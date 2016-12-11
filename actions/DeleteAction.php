@@ -1,6 +1,6 @@
 <?php
 
-namespace vova07\fileapi\actions;
+namespace porcelanosa\yii2siteoptions\actions;
 
 use yii\base\Action;
 use yii\base\InvalidConfigException;
@@ -35,6 +35,15 @@ class DeleteAction extends Action
      */
     public $uploadParam = 'file';
 
+    /*---------*/
+    public $modelStorageName = '';
+    private $modelStorageId;
+    private $modelStorage;
+    private $currentModel;
+
+    public $fieldStorage = 'image';
+    public $IDFieldStorage = 'option_type_id';
+
     /**
      * @inheritdoc
      */
@@ -45,6 +54,21 @@ class DeleteAction extends Action
         } else {
             $this->path = FileHelper::normalizePath($this->path) . DIRECTORY_SEPARATOR;
         }
+        /* get ID for save url*/
+        $req = Yii::$app->request;
+        if ($req->isPost && $req->post('id')) {
+            $this->modelStorageId = (int)$req->post('id');
+        } else {
+            throw new InvalidConfigException('ID must be set');
+        }
+        /* по переданному имени создаем модель, в которую будем сохранять путь картинки.*/
+        if ($this->modelStorageName == '') {
+            throw new InvalidConfigException('The "modelStorageName" attribute must be set.');
+        } else {
+            $modelStorage = new $this->modelStorageName;
+            $this->currentModel = $modelStorage::findOne([$this->IDFieldStorage => $this->modelStorageId]);
+
+        }
     }
 
     /**
@@ -52,10 +76,29 @@ class DeleteAction extends Action
      */
     public function run()
     {
-        if (($file = Yii::$app->request->getBodyParam($this->fileVar))) {
-            if (is_file($this->path . $file)) {
-                unlink($this->path . $file);
+        $result = [];
+        if (Yii::$app->request->isPost) {
+            $file_name = $this->currentModel->{$this->fieldStorage};
+            //var_dump($file_name);
+            if ($file_name != '') {
+                if (is_file($this->path . $file_name)) {
+                    if (unlink($this->path . $file_name)) {
+                        $this->currentModel->{$this->fieldStorage} = '';
+                        $this->currentModel->save(false);
+                        $result['message'] = 'delete ok';
+                        $result['success'] = 'true';
+                    } else {
+                        $result['message'] = 'delete break';
+                        $result['success'] = 'false';
+                    }
+                } else {
+                    $result['message'] = 'delete break';
+                    $result['success'] = 'false';
+                }
             }
+            return json_encode($result);
+        } else {
+            throw new BadRequestHttpException('Only POST is allowed');
         }
     }
 }

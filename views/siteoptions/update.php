@@ -9,12 +9,12 @@ $this->title = Yii::t('backend', 'Update {modelClass}: ', [
     'modelClass' => 'Siteoptions',
 ]) . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('backend', 'Siteoptions'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->option_name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('backend', 'Update');
 ?>
 <div class="siteoptions-update">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1>Редактирование параметра "<?= $model->option_name?>"</h1>
 
     <?= $this->render('_form', [
         'model' => $model,

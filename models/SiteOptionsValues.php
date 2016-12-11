@@ -2,6 +2,7 @@
 
 namespace porcelanosa\yii2siteoptions\models;
 
+use vova07\fileapi\behaviors\UploadBehavior;
 use Yii;
 use porcelanosa\yii2siteoptions\models\SiteOptions;
 
@@ -15,20 +16,33 @@ use porcelanosa\yii2siteoptions\models\SiteOptions;
  */
 class SiteOptionsValues extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            /*'uploadBehavior' => [
+                'class' => UploadBehavior::className(),
+                'attributes' => [
+                    'preview_url' => [
+                        'path' => '@webroot/uploads/siteoptions',
+                        'tempPath' => '@webroot/uploads/siteoptions',
+                        'url' => '@web/uploads/siteoptions'
+                    ],
+                    'value' => [
+                        'path' => '@storage/images/siteoptions',
+                        'tempPath' => '@storage/tmp',
+                        'url' => Yii::getAlias('@storageUrl/images/siteoptions'),
+                    ]
+                ]
+            ]*/
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return 'site_options_values';
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     * Возвращает параметров
-     */
-    public function getOption() {
-        return $this->hasOne( SiteOptions::className(), [ 'option_id' => 'id' ] );
     }
 
     /**

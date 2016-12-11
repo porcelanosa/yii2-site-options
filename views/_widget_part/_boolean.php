@@ -1,7 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Sasha-PC
- * Date: 07.12.2016
- * Time: 20:00
+ * @var $this View
+ * @var $option \porcelanosa\yii2siteoptions\models\SiteOptions
+ * @author Alex Porcelanosa
  */
+?>
+<?return $option->value->value?>

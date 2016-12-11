@@ -2,6 +2,7 @@
 
 namespace porcelanosa\yii2siteoptions\controllers;
 
+use porcelanosa\yii2siteoptions\models\SiteOptions;
 use Yii;
 use porcelanosa\yii2siteoptions\models\SiteOptionsValues;
 use porcelanosa\yii2siteoptions\models\search\SiteOptionsValuesSearch;
@@ -37,10 +38,9 @@ class SiteoptionsvaluesController extends Controller
     {
         $searchModel = new SiteOptionsValuesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        $options = SiteOptions::getSiteOptionsList();
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'options' => $options
         ]);
     }
 

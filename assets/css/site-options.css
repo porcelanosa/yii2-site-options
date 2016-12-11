@@ -1,0 +1,8 @@
+.box-title {
+    width: 100%;
+    cursor: pointer;
+}
+.thumb {
+    width: 100px;
+    border: 1px solid #2a2a2a;
+}

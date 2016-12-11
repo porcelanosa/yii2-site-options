@@ -1,234 +1,143 @@
 <?php
-    namespace porcelanosa\yii2options;
-    
-    use porcelanosa\yii2options\assets\OptionsAsset;
-    use porcelanosa\yii2options\components\helpers\MyHelper;
-    use porcelanosa\yii2options\models\OptionPresetValues;
-    use porcelanosa\yii2options\models\Options;
-    use porcelanosa\yii2options\models\OptionsList;
-    use porcelanosa\yii2options\models\RichTexts;
-    use Yii;
-    use yii\base\Exception;
-    use yii\base\Widget;
-    use yii\db\ActiveRecord;
-    use yii\helpers\ArrayHelper;
-    use yii\helpers\Json;
-    use yii\helpers\Url;
-    use yii\helpers\Html;
-    
-    
+namespace porcelanosa\yii2siteoptions;
+
+use porcelanosa\yii2options\components\helpers\MyHelper;
+use porcelanosa\yii2options\models\OptionPresetValues;
+use porcelanosa\yii2options\models\Options;
+use porcelanosa\yii2options\models\OptionsList;
+use porcelanosa\yii2options\models\RichTexts;
+use porcelanosa\yii2siteoptions\assets\SiteOptionsAsset;
+use porcelanosa\yii2siteoptions\models\SiteOptions;
+use Yii;
+use yii\base\Exception;
+use yii\base\Widget;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
+use yii\helpers\Url;
+use yii\helpers\Html;
+
+
+class SiteOptionsWidget extends Widget
+{
+
     /**
-     * Widget to Options Behavior
-     *
-     * @author Porcelanosa
+     * @var $option SiteOptions;
      */
-    class OptionsWidget extends Widget
+    public $option;
+    public $isInput = false;
+    public $imageSrc = false;
+    /* description of box view in admin part */
+    public $box_border = "";
+    public $box_color = "box-default";
+    public $box_collapsed = 'collapsed-box';
+    public $uploadImagePath = '@webroot/uploads/siteoptions/'; // '@webroot/uploads/cats/' alias of upload folder
+    public $uploadImageUrl = '@web/uploads/siteoptions/'; // '@web/uploads/cats/' alias of upload folder
+
+    public function init()
     {
-        /** @var ActiveRecord */
-        public $model;
-        
-        /** @var string */
-        public $behaviorName;
-        
-        /** @var OptionsBehavior Model of gallery to manage */
-        protected $behavior;
-        
-        public $options = array();
-        
-        public $options_string = '';
-        
-        public function init()
-        {
-            parent::init();
-            $this->behavior = $this->model->getBehavior($this->behaviorName);
-            //$this->registerTranslations();
-        }
-        
-        public function registerTranslations()
-        {
-            $i18n                                   = Yii::$app->i18n;
-            $i18n->translations['galleryManager/*'] = [
-                'class'          => 'yii\i18n\PhpMessageSource',
-                'sourceLanguage' => 'en-US',
-                'basePath'       => '@zxbodya/yii2/galleryManager/messages',
-                'fileMap'        => [],
-            ];
-        }
-        
-        
-        /** Render widget */
-        public function run()
-        {
-            $model_name = MyHelper::modelFromNamespace($this->behavior->model_name);
-            if ($this->behavior->getOptionsList() AND is_array($this->behavior->getOptionsList())) {
-                foreach ($this->model->optionsList as $optionList) {
-                    /**
-                     * @var $optionList OptionsList
-                     * @var $option     Options
-                     */
-                    $option            = Options::findOne(
-                        [
-                            'model'     => $model_name,
-                            'model_id'  => $this->model->id,
-                            'option_id' => $optionList->id
-                        ]
-                    );
-                    $option_name       = trim(str_replace(' ', '_', $optionList->alias));
-                    $value             = $this->behavior->getOptionValueById($optionList->id);
-                    $option_type_alias = $optionList->type->alias;
-                    if ($option_type_alias == 'boolean') {
-                        $this->options_string .=
-                            $this->render(
-                                '@vendor/porcelanosa/yii2-options/views/_partials/_boolean',
-                                [
-                                    'option_name' => $option_name,
-                                    'optionList'  => $optionList,
-                                    'value'       => $value,
-                                ]
-                            );
-                    }
-                    if ($option_type_alias == 'textinput') {
-                        $this->options_string .=
-                            $this->render(
-                                '@vendor/porcelanosa/yii2-options/views/_partials/_textinput',
-                                [
-                                    'option_name' => $option_name,
-                                    'optionList'  => $optionList,
-                                    'value'       => $value,
-                                ]
-                            );
-                    }
-                    if ($option_type_alias == 'textarea') {
-                        $textarea = $option ? RichTexts::find()->where(['option_id' => $option->id])->one() : null;
-                        $this->options_string .=
-                            $this->render(
-                                '@vendor/porcelanosa/yii2-options/views/_partials/_textarea',
-                                [
-                                    'option_name'   => $option_name,
-                                    'optionList'    => $optionList,
-                                    'richTextValue' => $textarea != null ? $textarea->text : '',
-                                ]
-                            );
-                    }
-                    if ($option_type_alias == 'richtext') {
-                        $richText = $option ? RichTexts::find()->where(['option_id' => $option->id])->one() : null;
-                        $this->options_string .=
-                            $this->render(
-                                '@vendor/porcelanosa/yii2-options/views/_partials/_rich_text',
-                                [
-                                    'option_name'   => $option_name,
-                                    'optionList'    => $optionList,
-                                    'richTextValue' => $richText != null ? $richText->text : '',
-                                    'behavior'      => $this->behavior,
-                                ]
-                            );
-                    }
-                    if ($option_type_alias == 'dropdown') {
-                        // получаем фабрики
-                        $status_preset_values =
-                            OptionPresetValues::find()->where(['preset_id' => $optionList->preset->id])->orderBy('sort')->all();
-                        // формируем массив, с ключем равным полю 'id' и значением равным полю 'name'
-                        $status_preset_items = ArrayHelper::map($status_preset_values, 'id', 'value');
-                        $status_preset_items =
-                            ArrayHelper::merge(['null' => 'Выберите ' . mb_strtolower($optionList->name)],
-                                $status_preset_items);
-                        $this->options_string .=
-                            $this->render(
-                                '@vendor/porcelanosa/yii2-options/views/_partials/_dropdown',
-                                [
-                                    'option_name'         => $option_name,
-                                    'optionList'          => $optionList,
-                                    'value'               => $value,
-                                    'status_preset_items' => $status_preset_items,
-                                ]
-                            );
-                    }
-                    if ($option_type_alias == 'radiobuton_list') {
-                        
-                        $value = $this->behavior->getOptionValueById($optionList->id);
-                        // получаем фабрики
-                        $status_preset_values =
-                            OptionPresetValues::find()->where(['preset_id' => $optionList->preset->id])->orderBy('sort')->all();
-                        // формируем массив, с ключем равным полю 'id' и значением равным полю 'name'
-                        $status_preset_items = ArrayHelper::map($status_preset_values, 'id', 'value');
-                        $this->options_string .=
-                            '<label>&nbsp;' . $optionList->name . '</label>' .
-                            Html::radioList(
-                                $option_name, $value ? $value : null, $status_preset_items, [
-                                    'id'    => $option_name,
-                                    'class' => 'form-control'
-                                ]
-                            );
-                    }
-                    if ($option_type_alias == 'dropdown-multiple') {
-                        //  получаем список значений для мульти селектед
-                        $multipleValuesArray = $option ? $this->behavior->getOptionMultipleValueByOptionId($option->id) : [];
-                        // получаем фабрики
-                        $status_preset_values =
-                            OptionPresetValues::find()->where(['preset_id' => $optionList->preset->id])->orderBy('sort')->all();
-                        // формируем массив, с ключем равным полю 'id' и значением равным полю 'name'
-                        $status_preset_items = ArrayHelper::map($status_preset_values, 'id', 'value');
-                        
-                        $this->options_string .=
-                            $this->render(
-                                '@vendor/porcelanosa/yii2-options/views/_partials/_dropdown_multiple',
-                                [
-                                    'option_name'         => $option_name,
-                                    'optionList'          => $optionList,
-                                    'multipleValuesArray' => $multipleValuesArray,
-                                    'status_preset_items' => $status_preset_items,
-                                ]
-                            );
-                    }
-                    /*  checkbox list  */
-                    if ($option_type_alias == 'checkboxlist-multiple') {
-                        
-                        //  получаем список значений для мульти селектед
-                        // а если нет - возвращаем пустой массив
-                        $multipleValuesArray = $option ? $this->behavior->getOptionMultipleValueByOptionId(
-                            $option->id
-                        ) : [];
-                        // получаем список предустановленных значений
-                        $status_preset_values = OptionPresetValues::find()->where(['preset_id' => $optionList->preset->id])->orderBy('sort')->all();
-                        // формируем массив, с ключем равным полю 'id' и значением равным полю 'name'
-                        $status_preset_items = ArrayHelper::map($status_preset_values, 'id', 'value');
-                        
-                        $this->options_string .=
-                            $this->render(
-                                '@vendor/porcelanosa/yii2-options/views/_partials/_checkboxlist_multiple',
-                                [
-                                    'option_name'         => $option_name,
-                                    'optionList'          => $optionList,
-                                    'multipleValuesArray' => $multipleValuesArray,
-                                    'status_preset_items' => $status_preset_items,
-                                ]
-                            );
-                    }
-                    /*  IMAGE Изображение */
-                    if ($option_type_alias == 'image') {
-                        $this->options_string .=
-                            $this->render(
-                                '@vendor/porcelanosa/yii2-options/views/_partials/_image',
-                                [
-                                    'option_name' => $option_name,
-                                    'optionList'  => $optionList,
-                                    'value'       => $value,
-                                    'this_widget' => $this,
-                                    'behavior'    => $this->behavior,
-                                ]
-                            );
-                    }
-                }
-            }
-            
-            $view = $this->getView();
-            OptionsAsset::register($view);
-            //$view->registerJs("$('#{$this->id}').galleryManager({$opts});");
-            
-            $this->options['id']    = 'opt-widget-' . $this->model->id;
-            $this->options['class'] = 'options';
-            
-            return $this->render('optionsWidget', ['options_string' => $this->options_string]);
-        }
-        
+        parent::init();
+        //$this->behavior = $this->model->getBehavior($this->behaviorName);
+        $this->registerTranslations();
     }
+
+    public function registerTranslations()
+    {
+        $i18n = Yii::$app->i18n;
+        $i18n->translations['site-options-widget'] = [
+            'class' => 'yii\i18n\PhpMessageSource',
+            'sourceLanguage' => 'en-US',
+            'basePath' => '@porcelanosa/yii2-site-options/messages',
+            'fileMap' => [],
+        ];
+    }
+
+
+    /** Render widget */
+    public function run()
+    {
+        $type = $this->option->type; // тип параметра
+        $view = $this->getView();
+        SiteOptionsAsset::register($view);
+        //$view->registerJs("$('#{$this->id}').galleryManager({$opts});");
+
+        /*$this->options['id'] = 'opt-widget-' . $this->model->id;
+        $this->options['class'] = 'options';*/
+
+        if ($type->type_alias == 'string') {
+            if (!$this->isInput) {
+                return $this->render('_widget_part/_string',
+                    [
+                        'option' => $this->option,
+                    ]);
+            } else {
+                return $this->render('_widget_part/_string_input',
+                    [
+                        'option' => $this->option,
+                        'box_border' => $this->box_border,
+                        'box_color' => $this->box_color,
+                        'box_collapsed' => $this->box_collapsed,
+                    ]);
+            }
+        } elseif ($type->type_alias == 'boolean') {
+            if (!$this->isInput) {
+                return $this->render('_widget_part/_boolean',
+                    [
+                        'option' => $this->option,
+                    ]);
+            } else {
+                return $this->render('_widget_part/_boolean_input',
+                    [
+                        'option' => $this->option,
+                        'box_border' => $this->box_border,
+                        'box_color' => $this->box_color,
+                        'box_collapsed' => $this->box_collapsed,
+                    ]);
+            }
+        } elseif ($type->type_alias == 'image') {
+            if (!$this->isInput) {
+                return $this->render('_widget_part/_image',
+                    [
+                        'option' => $this->option,
+                        'uploadImagePath' => $this->uploadImagePath,
+                        'uploadImageUrl' => $this->uploadImageUrl,
+                    ]);
+            } elseif($this->imageSrc) {
+                return $this->render('_widget_part/_image_src',
+                    [
+                        'option' => $this->option,
+                        'uploadImagePath' => $this->uploadImagePath,
+                        'uploadImageUrl' => $this->uploadImageUrl,
+                    ]);
+            } else {
+                return $this->render('_widget_part/_image_input',
+                    [
+                        'option' => $this->option,
+                        'box_border' => $this->box_border,
+                        'box_color' => $this->box_color,
+                        'box_collapsed' => $this->box_collapsed,
+                        'uploadImagePath' => $this->uploadImagePath,
+                        'uploadImageUrl' => $this->uploadImageUrl,
+                    ]);
+            }
+        } elseif ($type->type_alias == 'rich_text') {
+            if (!$this->isInput) {
+                return $this->render('_widget_part/_rich_text',
+                    [
+                        'option' => $this->option,
+                    ]);
+            } else {
+                return $this->render('_widget_part/_rich_text_input',
+                    [
+                        'option' => $this->option,
+                        'box_border' => $this->box_border,
+                        'box_color' => $this->box_color,
+                        'box_collapsed' => $this->box_collapsed,
+                        'uploadImagePath' => Yii::getAlias($this->uploadImagePath),
+                        'uploadImageUrl' => Yii::getAlias($this->uploadImageUrl),
+                    ]);
+            }
+        }
+    }
+
+}

@@ -1,8 +1,7 @@
 <?php
 
-namespace vova07\imperavi\actions;
+namespace porcelanosa\yii2siteoptions\actions;
 
-use vova07\imperavi\Widget;
 use yii\base\Action;
 use yii\base\DynamicModel;
 use yii\base\InvalidCallException;
@@ -88,6 +87,14 @@ class UploadAction extends Action
      */
     private $_validator = 'image';
 
+    /*---------*/
+    public $modelStorageName = '';
+    private $modelStorageId;
+    public $fieldStorage = 'image';
+    public $IDFieldStorage = 'id';
+    private $modelStorage;
+    private $currentModel;
+
     /**
      * @inheritdoc
      */
@@ -110,8 +117,25 @@ class UploadAction extends Action
         if ($this->uploadOnlyImage !== true) {
             $this->_validator = 'file';
         }
+        /* get ID for save url*/
+        $req = Yii::$app->request;
+        if ($req->isPost && $req->getBodyParam('id')) {
+            $this->modelStorageId = (int)$req->getBodyParam('id');
+        } else {
+            throw new InvalidConfigException('ID must be set');
+        }
+        /* по переданному имени создаем модель, в которую будем сохранять путь картинки.*/
+        if ($this->modelStorageName == '') {
+            throw new InvalidConfigException('The "modelStorageName" attribute must be set.');
+        } else {
+            $modelStorage = new $this->modelStorageName;
+            $this->currentModel = $modelStorage::findOne([$this->IDFieldStorage=>$this->modelStorageId]);
+           /* var_dump($req->getBodyParam('id'));*/
+            var_dump($this->currentModel);
+        }
 
-        Widget::registerTranslations();
+
+
     }
 
     /**
@@ -137,9 +161,11 @@ class UploadAction extends Action
                     if ($this->uploadOnlyImage !== true) {
                         $result['filename'] = $model->file->name;
                     }
+                    $this->currentModel->{$this->fieldStorage} = $model->file->name;
+                    $this->currentModel->save(false);
                 } else {
                     $result = [
-                        'error' => Yii::t('vova07/imperavi', 'ERROR_CAN_NOT_UPLOAD_FILE')
+                        'error' => 'ERROR_CAN_NOT_UPLOAD_FILE'
                     ];
                 }
             }
